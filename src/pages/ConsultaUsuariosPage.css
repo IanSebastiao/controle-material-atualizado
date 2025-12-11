@@ -1,0 +1,80 @@
+.consulta-usuarios-page {
+  padding: 20px;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.erro {
+  color: red;
+  margin-bottom: 20px;
+}
+
+.usuarios-tabela-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.usuarios-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.usuarios-tabela th,
+.usuarios-tabela td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.usuarios-tabela th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #333;
+}
+
+.usuarios-tabela tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.btn-acao {
+  padding: 6px 12px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.btn-acao.editar {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-acao.editar:hover {
+  background-color: #0056b3;
+}
+
+.btn-acao.excluir {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-acao.excluir:hover {
+  background-color: #c82333;
+}
+
+.btn-acao:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

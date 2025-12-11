@@ -1,0 +1,86 @@
+.consulta-estoque-page {
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.page-container h1 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.page-container p {
+  color: #666;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.estoque-tabela-wrapper {
+  overflow-x: auto;
+  margin-top: 30px;
+}
+
+.estoque-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.estoque-tabela th, .estoque-tabela td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.estoque-tabela th {
+  background: #f5f6fa;
+  color: #333;
+  font-weight: 600;
+}
+
+.estoque-tabela tr:last-child td {
+  border-bottom: none;
+}
+
+.erro {
+  color: #c00;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-acao {
+  padding: 6px 14px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-acao.editar {
+  background: #2196f3;
+  color: #fff;
+}
+.btn-acao.editar:hover {
+  background: #1769aa;
+}
+.btn-acao.excluir {
+  background: #e53935;
+  color: #fff;
+}
+.btn-acao.excluir:hover {
+  background: #b71c1c;
+}
+
