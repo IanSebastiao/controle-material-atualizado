@@ -2,38 +2,14 @@ import React, { useEffect, useState } from 'react';
 import './ConsultaEstoquePage.css';
 import { produtoService } from '../services/produtoService';
 import { useNavigate } from 'react-router-dom';
-
+import ConfirmDialog from '../components/common/ConfirmDialog';
 
 const ConsultaEstoquePage = () => {
   const [produto, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
-  const [excluindoId, setExcluindoId] = useState(null);  // ...existing code...
-  <tbody>
-    {produto.map(produto => (
-      <tr key={produto.idproduto}>
-        <td>{produto.nome}</td>
-        <td>{produto.quantidade}</td>
-        <td>{produto.idtipo}</td>
-        <td>{produto.local}</td>
-        <td>{produto.codigo || '-'}</td>
-        <td>{produto.entrada ? new Date(produto.entrada).toLocaleString('pt-BR') : '-'}</td>
-        <td>
-          <button className="btn-acao editar" onClick={() => handleEditar(produto.idproduto)}>
-            Editar
-          </button>
-          <button
-            className="btn-acao excluir"
-            onClick={() => handleExcluir(produto.idproduto)}
-            disabled={excluindoId === produto.idproduto}
-          >
-            {excluindoId === produto.idproduto ? 'Excluindo...' : 'Excluir'}
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-  // ...existing code...
+  const [excluindoId, setExcluindoId] = useState(null);
+  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, produtoId: null, produtoNome: null });
   const navigate = useNavigate();
 
   const fetchProdutos = async () => {
@@ -42,7 +18,7 @@ const ConsultaEstoquePage = () => {
       const lista = await produtoService.listar();
       setProdutos(lista);
     } catch (e) {
-      console.error('Erro detalhado ao carregar produtos:', e); // <-- Adicione esta linha
+      console.error('Erro detalhado ao carregar produtos:', e);
       setErro('Erro ao carregar produtos.');
     } finally {
       setLoading(false);
@@ -58,17 +34,27 @@ const ConsultaEstoquePage = () => {
     navigate(`/editar-produto/${id}`);
   };
 
-  const handleExcluir = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir este produto?')) return;
-    setExcluindoId(id);
+  const handleDeleteClick = (produtoId, produtoNome) => {
+    setDeleteDialog({ isOpen: true, produtoId, produtoNome });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const produtoId = deleteDialog.produtoId;
+    setExcluindoId(produtoId);
     try {
-      await produtoService.excluir(id);
+      await produtoService.excluir(produtoId);
       await fetchProdutos();
+      setDeleteDialog({ isOpen: false, produtoId: null, produtoNome: null });
     } catch (e) {
-      alert('Erro ao excluir produto.');
+      console.error('Erro ao excluir produto:', e);
+      setErro('Erro ao excluir produto.');
     } finally {
       setExcluindoId(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ isOpen: false, produtoId: null, produtoNome: null });
   };
 
   const handleImportar = async () => {
@@ -107,29 +93,27 @@ const ConsultaEstoquePage = () => {
                   <th>Tipo</th>
                   <th>Localização</th>
                   <th>Código</th>
-                  {/* <th>Data Cadastro</th> */}
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {produto.map(produto => (
-                  <tr key={produto.idproduto}>
-                    <td>{produto.nome}</td>
-                    <td>{produto.quantidade}</td>
-                    <td>{produto.idtipo}</td>
-                    <td>{produto.local}</td>
-                    <td>{produto.codigo || '-'}</td>
-                    {/* <td>{produto.entrada ? new Date(produto.entrada).toLocaleString('pt-BR') : '-'}</td> */}
+                {produto.map(p => (
+                  <tr key={p.idproduto}>
+                    <td>{p.nome}</td>
+                    <td>{p.quantidade}</td>
+                    <td>{p.idtipo}</td>
+                    <td>{p.local}</td>
+                    <td>{p.codigo || '-'}</td>
                     <td>
-                      <button className="btn-acao editar" onClick={() => handleEditar(produto.idproduto)}>
+                      <button className="btn-acao editar" onClick={() => handleEditar(p.idproduto)}>
                         Editar
                       </button>
                       <button
                         className="btn-acao excluir"
-                        onClick={() => handleExcluir(produto.idproduto)}
-                        disabled={excluindoId === produto.idproduto}
+                        onClick={() => handleDeleteClick(p.idproduto, p.nome)}
+                        disabled={excluindoId === p.idproduto}
                       >
-                        {excluindoId === produto.idproduto ? 'Excluindo...' : 'Excluir'}
+                        {excluindoId === p.idproduto ? 'Excluindo...' : 'Excluir'}
                       </button>
                     </td>
                   </tr>
@@ -144,6 +128,19 @@ const ConsultaEstoquePage = () => {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+              isOpen={deleteDialog.isOpen}
+              title="Excluir Fornecedor"
+              message={`Tem certeza que deseja excluir o fornecedor "${deleteDialog.fornecedor?.nome}"? Esta ação não pode ser desfeita.`}
+              onConfirm={handleDeleteConfirm}
+              onCancel={handleDeleteCancel}
+              confirmText="Excluir"
+              cancelText="Cancelar"
+              isDanger={true}
+              showUndoTimer={true}
+              undoTimeout={5}
+            />
     </div>
   );
 };

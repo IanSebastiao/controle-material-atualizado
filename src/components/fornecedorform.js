@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { formatCNPJ, formatPhoneBR } from '../utils/formatters';
 import './fornecedorform.css';
 
@@ -9,7 +9,7 @@ function isValidCNPJ(value) {
   return digits.length === 14;
 }
 
-export default function FornecedorForm({ onSubmit, initialData = {}, onCancel, mode = 'create' }) {
+export default function FornecedorForm({ onSubmit, initialData = {}, onCancel, mode = 'create', onFormReset }) {
   const [form, setForm] = useState({
     nome: '',
     cnpj: '',
@@ -17,6 +17,7 @@ export default function FornecedorForm({ onSubmit, initialData = {}, onCancel, m
     telefone: '',
   });
   const [errors, setErrors] = useState({});
+  const formRef = useRef(null);
 
   useEffect(() => {
     if (!initialData) return;
@@ -28,6 +29,26 @@ export default function FornecedorForm({ onSubmit, initialData = {}, onCancel, m
     });
     setErrors({});
   }, [initialData]);
+
+  // Expõe método para resetar o formulário
+  useEffect(() => {
+    if (typeof onFormReset === 'function') {
+      onFormReset(() => resetForm());
+    }
+  }, [onFormReset]);
+
+  const resetForm = () => {
+    setForm({
+      nome: '',
+      cnpj: '',
+      email: '',
+      telefone: '',
+    });
+    setErrors({});
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,7 +84,7 @@ export default function FornecedorForm({ onSubmit, initialData = {}, onCancel, m
   };
 
   return (
-    <form className="fornecedor-form" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="fornecedor-form" onSubmit={handleSubmit} noValidate>
       <h1>{mode === 'edit' ? 'Editar Fornecedor' : 'Fornecedor'}</h1>
 
       <div className="mb-3">

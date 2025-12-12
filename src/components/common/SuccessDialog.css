@@ -1,0 +1,101 @@
+.success-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.success-dialog {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+  padding: 30px 20px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-30px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.success-dialog-icon {
+  font-size: 3rem;
+  color: #4caf50;
+  margin-bottom: 16px;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.success-dialog-header {
+  margin-bottom: 16px;
+}
+
+.success-dialog-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.success-dialog-body {
+  color: #555;
+}
+
+.success-dialog-body p {
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.countdown {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.countdown p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.countdown strong {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.countdown-bar {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.countdown-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50 0%, #45a049 100%);
+  transition: width 1s linear;
+}

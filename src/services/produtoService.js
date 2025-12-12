@@ -6,7 +6,7 @@ export const produtoService = {
   async cadastrar(produtoData) {
     const { data, error } = await supabase
       .from(TABLE)
-      .insert([produtoData]) // Remova o campo validado
+      .insert([produtoData])
       .select()
       .single();
     if (error) throw error;
@@ -50,5 +50,14 @@ export const produtoService = {
       .eq('idproduto', id);
     if (error) throw error;
     return true;
+  },
+
+  async listarTipos() {
+    const { data, error } = await supabase
+      .from('tipo')
+      .select('*')
+      .order('nome', { ascending: true });
+    if (error) throw error;
+    return data || [];
   }
 };

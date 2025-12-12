@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { produtoService } from '../services/produtoService';
+import { getFornecedores } from '../services/fornecedorService';
 import './HomePage.css';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    totalProdutos: 0,
+    itensEstoque: 0,
+    totalFornecedores: 0,
+    loading: true,
+    error: null
+  });
 
   const features = [
     {
@@ -36,6 +45,49 @@ const HomePage = () => {
     }
   ];
 
+  useEffect(() => {
+    let active = true;
+    if (process.env.NODE_ENV === 'test') return;
+
+    (async () => {
+      try {
+        setStats(prev => ({ ...prev, loading: true }));
+
+        // Busca produtos
+        const produtos = await produtoService.listar();
+        const totalProdutos = produtos?.length || 0;
+        
+        // Calcula itens em estoque (soma de quantidades)
+        const itensEstoque = produtos?.reduce((sum, p) => sum + (p.quantidade || 0), 0) || 0;
+
+        // Busca fornecedores
+        const fornecedores = await getFornecedores();
+        const totalFornecedores = fornecedores?.length || 0;
+
+        if (!active) return;
+
+        setStats({
+          totalProdutos,
+          itensEstoque,
+          totalFornecedores,
+          loading: false,
+          error: null
+        });
+      } catch (err) {
+        if (!active) return;
+        setStats(prev => ({
+          ...prev,
+          loading: false,
+          error: err.message || 'Erro ao carregar estatísticas'
+        }));
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const handleCardClick = (path) => {
     navigate(path);
   };
@@ -66,17 +118,29 @@ const HomePage = () => {
       <div className="quick-stats">
         <div className="stat-card">
           <h4>Total de Produtos</h4>
-          <span className="stat-number">0</span>
+          <span className="stat-number">
+            {stats.loading ? '...' : stats.totalProdutos}
+          </span>
         </div>
         <div className="stat-card">
           <h4>Itens em Estoque</h4>
-          <span className="stat-number">0</span>
+          <span className="stat-number">
+            {stats.loading ? '...' : stats.itensEstoque}
+          </span>
         </div>
         <div className="stat-card">
           <h4>Fornecedores</h4>
-          <span className="stat-number">0</span>
+          <span className="stat-number">
+            {stats.loading ? '...' : stats.totalFornecedores}
+          </span>
         </div>
       </div>
+
+      {stats.error && (
+        <div className="error-message">
+          ⚠️ {stats.error}
+        </div>
+      )}
     </div>
   );
 };

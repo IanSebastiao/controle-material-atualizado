@@ -6,7 +6,6 @@ import CadastroProdutoPage from '../pages/CadastroProdutoPage';
 import EditarProdutoPage from '../pages/EditarProdutoPage';
 import ConsultaEstoquePage from '../pages/ConsultaEstoquePage';
 import MovimentacoesPage from '../pages/MovimentacoesPage';
-import FornecedoresPage from '../pages/FornecedoresPage';
 import CadastroFornecedorPage from '../pages/CadastroFornecedorPage';
 import EditarUsuarioPage from '../pages/EditarUsuarioPage';
 import ConsultaUsuariosPage from '../pages/ConsultaUsuariosPage';

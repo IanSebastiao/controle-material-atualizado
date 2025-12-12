@@ -1,31 +1,57 @@
+/* Página de cadastro/consulta de fornecedores */
 .cadastro-fornecedor-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 16px;
+  box-sizing: border-box;
 }
 
-.page-header {
+/* Container centralizado, mantém layout consistente com o formulário */
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Card branco que envolve título e formulário (combina com fornecedorform.css) */
+.card {
   background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.page-header h1 {
-  margin: 0;
+.form-card {
+  max-width: 760px;
+  margin: 0 auto 12px;
+}
+
+.card .card-body {
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+/* H1 dentro do card branco */
+.form-card h1 {
   color: #333;
+  margin: 0 0 10px 0;
   text-align: center;
+  font-size: 1.4rem;
 }
 
-.page-content {
-  padding: 20px;
-}
-
+/* Alertas com largura limitada e centralizados visualmente */
 .alert {
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 4px;
+  max-width: 720px;
+  margin: 10px auto;
+  padding: 12px 16px;
+  border-radius: 6px;
   text-align: center;
 }
 
+/* Cores dos alertas */
 .alert-success {
   background-color: #d4edda;
   color: #155724;
@@ -44,30 +70,115 @@
   border: 1px solid #b8daff;
 }
 
+/* Cabeçalho da seção de listagem */
 h2 {
   color: #ffffff;
-  margin-bottom: 1.5rem;
+  margin: 14px 0 8px 0;
+  font-size: 1.1rem;
+  text-align: left;
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.95);
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
+/* Estilização da área que contém a tabela */
 .table-responsive {
+  padding: 18px;
+  margin-top: 6px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
 }
 
+/* Tabela mais limpa e legível */
 .table {
-  margin-bottom: 0;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
 }
 
+/* Cabeçalho com texto escuro para leitura sobre o card branco */
+.table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: transparent;
+}
+
+/* Linhas e células */
+.table tbody td {
+  padding: 10px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  color: #333;
+}
+
+/* Texto quando não há fornecedores */
 .text-muted {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  text-align: center;
+  padding: 18px 0;
+}
+
+/* Botões da tabela: visual coerente com .fornecedor-form .btn */
+.table .btn {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  background: transparent;
+}
+
+/* Ação primária (editar) — similar ao .btn-primary do formulário */
+.table .btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+.table .btn-outline-primary:hover,
+.table .btn-outline-primary:focus {
+  background: #007bff;
+  color: #fff;
+  border-color: #0056b3;
+}
+
+/* Ação de exclusão */
+.table .btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.table .btn-outline-danger:hover,
+.table .btn-outline-danger:focus {
+  background: #dc3545;
+  color: #fff;
+  border-color: #a71d2a;
+}
+
+/* Ajustes para botões pequenos (me-2 margin) */
+.me-2 { margin-right: 8px; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 0 12px;
+  }
+
+  .form-card {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+
+  .table thead th, .table tbody td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .table .btn {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
 }

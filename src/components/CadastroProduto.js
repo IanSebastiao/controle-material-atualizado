@@ -16,10 +16,12 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [fornecedores, setFornecedores] = useState([]); // Novo estado
+  const [fornecedores, setFornecedores] = useState([]);
+  const [tipos, setTipos] = useState([]);
+  const [tiposLoading, setTiposLoading] = useState(true);
 
+  // Buscar fornecedores cadastrados no banco
   useEffect(() => {
-    // Buscar fornecedores cadastrados no banco
     const fetchFornecedores = async () => {
       try {
         const lista = await getFornecedores();
@@ -30,6 +32,29 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
     };
     fetchFornecedores();
   }, []);
+
+  // Buscar tipos do banco de dados
+  useEffect(() => {
+    const fetchTipos = async () => {
+      try {
+        setTiposLoading(true);
+        const tiposData = await produtoService.listarTipos();
+        setTipos(tiposData || []);
+      } catch (error) {
+        console.error('Erro ao carregar tipos:', error);
+        setTipos([]);
+      } finally {
+        setTiposLoading(false);
+      }
+    };
+    fetchTipos();
+  }, []);
+
+  // Função para verificar se tipo é perecível
+  const isPerecivel = (tipoId) => {
+    const tipo = tipos.find(t => String(t.id) === String(tipoId) || String(t.idtipo) === String(tipoId));
+    return tipo && (tipo.nome?.toLowerCase() === 'perecível' || tipo.nome?.toLowerCase() === 'perecivel');
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -48,6 +73,11 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
 
     if (!formData.local.trim()) {
       newErrors.local = 'Localização é obrigatória';
+    }
+
+    // Validar validade se tipo for perecível
+    if (isPerecivel(formData.idtipo) && !formData.validade) {
+      newErrors.validade = 'Validade é obrigatória para produtos perecíveis';
     }
 
     setErrors(newErrors);
@@ -83,25 +113,18 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
         nome: formData.nome,
         codigo: formData.codigo,
         quantidade: parseInt(formData.quantidade),
-        validade: formData.validade || null,
+        validade: isPerecivel(formData.idtipo) ? formData.validade : null,
         local: formData.local,
-        // se for um valor numérico, converte; caso contrário mantém string (ex: 'Eletrônico')
         idtipo: formData.idtipo === '' ? null : (isNaN(Number(formData.idtipo)) ? formData.idtipo : Number(formData.idtipo)),
         idfornecedor: formData.idfornecedor === '' ? null : (isNaN(Number(formData.idfornecedor)) ? formData.idfornecedor : Number(formData.idfornecedor)),
-        entrada: new Date().toISOString().split('T')[0], // data atual YYYY-MM-DD
+        entrada: new Date().toISOString().split('T')[0],
       };
-      // Para comunicação com o backend (Supabase) devemos enviar apenas os campos
-      // que correspondem às colunas do banco de dados.
-      const produtoDataParaBackend = { ...produtoData };
 
-      // Se estivermos no modo de edição, delegamos a atualização ao componente pai
-      // mas enviamos apenas os campos com nomes do banco.
       if (mode === 'edit' && produtoEdicao) {
-        onSubmit?.(produtoDataParaBackend);
+        onSubmit?.(produtoData);
       } else {
-        const criado = await produtoService.cadastrar(produtoDataParaBackend);
-        // Informe o pai com os dados criados (se disponível) ou com os dados enviados
-        onSubmit?.(criado || produtoDataParaBackend);
+        const criado = await produtoService.cadastrar(produtoData);
+        onSubmit?.(criado || produtoData);
 
         // Resetar formulário somente após criação
         setFormData({
@@ -170,15 +193,42 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
         </div>
 
         <div className="form-group">
-          <label htmlFor="validade">Validade</label>
-          <input
-            type="date"
-            id="validade"
-            name="validade"
-            value={formData.validade}
+          <label htmlFor="idtipo">Tipo *</label>
+          <select
+            id="idtipo"
+            name="idtipo"
+            value={formData.idtipo}
             onChange={handleChange}
-          />
+            required
+            disabled={tiposLoading}
+          >
+            <option value="">
+              {tiposLoading ? 'Carregando tipos...' : 'Selecione o tipo'}
+            </option>
+            {tipos.map(tipo => (
+              <option key={tipo.id || tipo.idtipo} value={tipo.id || tipo.idtipo}>
+                {tipo.nome}
+              </option>
+            ))}
+          </select>
+          {errors.idtipo && <div className="field-error">{errors.idtipo}</div>}
         </div>
+
+        {/* Campo de validade aparece apenas se tipo for perecível */}
+        {isPerecivel(formData.idtipo) && (
+          <div className="form-group">
+            <label htmlFor="validade">Validade *</label>
+            <input
+              type="date"
+              id="validade"
+              name="validade"
+              value={formData.validade}
+              onChange={handleChange}
+              required
+            />
+            {errors.validade && <div className="field-error">{errors.validade}</div>}
+          </div>
+        )}
 
         <div className="form-group">
           <label htmlFor="local">Localização *</label>
@@ -191,25 +241,6 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
             required
           />
           {errors.local && <div className="field-error">{errors.local}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="idtipo">Tipo *</label>
-          <select
-            id="idtipo"
-            name="idtipo"
-            value={formData.idtipo}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Selecione o tipo</option>
-            <option value="1">Perecível</option>
-            <option value="2">Não perecível</option>
-            <option value="3">Outros</option>
-            {/* opção adicional para compatibilidade com testes */}
-            <option value="Eletrônico">Eletrônico</option>
-          </select>
-          {errors.idtipo && <div className="field-error">{errors.idtipo}</div>}
         </div>
 
         <div className="form-group">
@@ -253,4 +284,4 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
   );
 };
 
-export default CadastroProduto; // ← EXPORT DEFAULT CORRETO
+export default CadastroProduto;
