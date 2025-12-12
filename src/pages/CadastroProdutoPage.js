@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Adicione esta linha
+import { useNavigate } from 'react-router-dom';
 import CadastroProduto from '../components/CadastroProduto';
+import SuccessDialog from '../components/common/SuccessDialog';
 import './CadastroProdutoPage.css';
 
 const CadastroProdutoPage = ({ onSubmit, mode = 'create' }) => {
-  const [mensagem, setMensagem] = useState('');
-  const navigate = useNavigate(); // Adicione esta linha
+  const [successDialog, setSuccessDialog] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
-    window.alert('Produto cadastrado com sucesso!'); // Alerta nativo
-    setMensagem(
-      mode === 'create' 
-        ? 'Produto cadastrado com sucesso!' 
-        : 'Produto atualizado com sucesso!'
-    );
-    setTimeout(() => {
-      setMensagem('');
-      navigate('/consulta-estoque');
-    }, 1000);
+    setSuccessDialog(true);
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessDialog(false);
+    navigate('/consulta-estoque');
   };
 
   const handleCancel = () => {
@@ -27,22 +24,29 @@ const CadastroProdutoPage = ({ onSubmit, mode = 'create' }) => {
   return (
     <div className="cadastro-produto-page">
       <div className="page-container">
-        <h1>
-          {mode === 'create' ? 'Cadastrar Novo Produto' : 'Editar Produto'}
-        </h1>
-        
-        {mensagem && (
-          <div className="alert alert-success">
-            {mensagem}
+        <div className="card form-card">
+          <div className="card-body">
+            <h1>{mode === 'create' ? 'Cadastrar Novo Produto' : 'Editar Produto'}</h1>
+            
+            <CadastroProduto 
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              mode={mode}
+            />
           </div>
-        )}
-        
-        <CadastroProduto 
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          mode={mode}
-        />
+        </div>
       </div>
+
+      <SuccessDialog
+        isOpen={successDialog}
+        title={mode === 'create' ? 'Produto Cadastrado!' : 'Produto Atualizado!'}
+        message={mode === 'create' 
+          ? 'Seu produto foi cadastrado com sucesso no sistema.'
+          : 'As alterações do produto foram salvas com sucesso.'
+        }
+        countdown={3}
+        onClose={handleSuccessClose}
+      />
     </div>
   );
 };

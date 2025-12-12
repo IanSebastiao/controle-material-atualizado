@@ -56,7 +56,7 @@ export const produtoService = {
     const { data, error } = await supabase
       .from('tipo')
       .select('*')
-      .order('nome', { ascending: true });
+      .order('tipo', { ascending: true });
     if (error) throw error;
     return data || [];
   }

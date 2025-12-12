@@ -38,11 +38,30 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
     const fetchTipos = async () => {
       try {
         setTiposLoading(true);
+        console.log('Buscando tipos do banco...');
         const tiposData = await produtoService.listarTipos();
-        setTipos(tiposData || []);
+        console.log('Dados recebidos do banco:', tiposData);
+
+        if (tiposData && tiposData.length > 0) {
+          setTipos(tiposData);
+          console.log('Tipos carregados com sucesso:', tiposData.length, 'itens');
+        } else {
+          console.log('Nenhum tipo encontrado no banco, usando tipos padrão');
+          // Tipos padrão caso não haja dados no banco
+          setTipos([
+            { idtipo: 1, tipo: 'Perecível' },
+            { idtipo: 2, tipo: 'Não perecível' },
+            { idtipo: 3, tipo: 'Outros' },
+          ]);
+        }
       } catch (error) {
         console.error('Erro ao carregar tipos:', error);
-        setTipos([]);
+        // Tipos padrão em caso de erro
+        setTipos([
+          { idtipo: 1, tipo: 'Perecível' },
+          { idtipo: 2, tipo: 'Não perecível' },
+          { idtipo: 3, tipo: 'Outros' },
+        ]);
       } finally {
         setTiposLoading(false);
       }
@@ -52,8 +71,8 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
 
   // Função para verificar se tipo é perecível
   const isPerecivel = (tipoId) => {
-    const tipo = tipos.find(t => String(t.id) === String(tipoId) || String(t.idtipo) === String(tipoId));
-    return tipo && (tipo.nome?.toLowerCase() === 'perecível' || tipo.nome?.toLowerCase() === 'perecivel');
+    const tipo = tipos.find(t => String(t.idtipo) === String(tipoId));
+    return tipo && (tipo.tipo?.toLowerCase() === 'perecível' || tipo.tipo?.toLowerCase() === 'perecivel');
   };
 
   const validateForm = () => {
@@ -206,8 +225,8 @@ const CadastroProduto = ({ onSubmit, onCancel, produtoEdicao, mode = 'create' })
               {tiposLoading ? 'Carregando tipos...' : 'Selecione o tipo'}
             </option>
             {tipos.map(tipo => (
-              <option key={tipo.id || tipo.idtipo} value={tipo.id || tipo.idtipo}>
-                {tipo.nome}
+              <option key={tipo.idtipo} value={tipo.idtipo}>
+                {tipo.tipo}
               </option>
             ))}
           </select>
