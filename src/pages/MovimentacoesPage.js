@@ -1,14 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './MovimentacoesPage.css';
 
 const MovimentacoesPage = () => {
-  const navigate = useNavigate();
 
   return (
     <div className="movimentacoes-page">
       <div className="page-container">
-        <div className="page-header">
+        {/* <div className="page-header">
           <h1>Movimentações de Estoque</h1>
           <button 
             onClick={() => navigate('/movimentacoes/nova')}
@@ -16,7 +14,7 @@ const MovimentacoesPage = () => {
           >
             ＋ Nova Movimentação
           </button>
-        </div>
+        </div> */}
         
         <div className="movimentacoes-content">
           <div className="info-card">
@@ -40,12 +38,12 @@ const MovimentacoesPage = () => {
               </div>
             </div>
             
-            <button 
+            {/* <button 
               onClick={() => navigate('/movimentacoes/nova')}
               className="btn-primary"
             >
               Começar com Nova Movimentação
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

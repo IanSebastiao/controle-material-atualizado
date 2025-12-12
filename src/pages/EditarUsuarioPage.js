@@ -5,7 +5,6 @@ import EditarUsuario from '../components/EditarUsuario';
 
 const EditarUsuarioPage = () => {
   const { id } = useParams();
-  const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [mensagem, setMensagem] = useState('');
@@ -15,8 +14,8 @@ const EditarUsuarioPage = () => {
     const fetchUsuario = async () => {
       setLoading(true);
       try {
-        const encontrado = await usuarioService.buscarPorId(id);
-        setUsuario(encontrado);
+        // Usuário será carregado pelo componente EditarUsuario
+        // Não precisamos armazenar aqui
       } catch (e) {
         setErro('Erro ao carregar usuário.');
       } finally {

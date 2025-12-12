@@ -1,7 +1,10 @@
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Layout from '../components/common/Layout';
+import ProtectedRoute from '../components/ProtectedRoute';
 import HomePage from '../pages/HomePage';
+import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
 import CadastroProdutoPage from '../pages/CadastroProdutoPage';
 import EditarProdutoPage from '../pages/EditarProdutoPage';
 import ConsultaEstoquePage from '../pages/ConsultaEstoquePage';
@@ -25,17 +28,6 @@ const AppRoutes = () => {
     } catch (error) {
       console.error('Erro ao cadastrar produto:', error);
       alert('Erro ao cadastrar produto. Tente novamente.');
-    }
-  };
-
-  const handleEditProduto = async (id, produtoData) => {
-    try {
-      await produtoService.atualizar(id, produtoData);
-      alert('Produto atualizado com sucesso!');
-      navigate('/consulta-estoque');
-    } catch (error) {
-      console.error('Erro ao atualizar produto:', error);
-      alert('Erro ao atualizar produto. Tente novamente.');
     }
   };
 
@@ -63,18 +55,6 @@ const AppRoutes = () => {
     }
   };
 
-  // Handlers para Usuários
-  const handleEditUsuario = async (id, usuarioData) => {
-    try {
-      await usuarioService.atualizar(id, usuarioData);
-      alert('Usuário atualizado com sucesso!');
-      navigate('/usuarios'); // Assumindo que há uma rota /usuarios
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      alert('Erro ao atualizar usuário. Tente novamente.');
-    }
-  };
-
   // Componente NotFoundPage interno
   const NotFoundPage = () => (
     <div className="not-found">
@@ -85,71 +65,114 @@ const AppRoutes = () => {
   );
 
   return (
-    <Layout>
-      <Routes>
-        {/* Página Inicial */}
-        <Route path="/" element={<HomePage />} />
-        
-        {/* Rotas de Produtos */}
-        <Route 
-          path="/cadastro-produto" 
-          element={
-            <CadastroProdutoPage 
+    <Routes>
+      {/* Rotas públicas */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+
+      {/* Rotas protegidas */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Layout>
+            <HomePage />
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      {/* Rotas de Produtos */}
+      <Route path="/cadastro-produto" element={
+        <ProtectedRoute>
+          <Layout>
+            <CadastroProdutoPage
               onSubmit={handleAddProduto}
               mode="create"
             />
-          } 
-        />
-        
-        <Route 
-          path="/editar-produto/:id" 
-          element={
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/editar-produto/:id" element={
+        <ProtectedRoute>
+          <Layout>
             <EditarProdutoPage />
-          } 
-        />
-        
-        <Route path="/consulta-estoque" element={<ConsultaEstoquePage />} />
-        
-        {/* Rotas de Movimentações */}
-        <Route 
-          path="/movimentacoes/nova" 
-          element={
-            <MovimentacoesPage 
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/consulta-estoque" element={
+        <ProtectedRoute>
+          <Layout>
+            <ConsultaEstoquePage />
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      {/* Rotas de Movimentações */}
+      <Route path="/movimentacoes/nova" element={
+        <ProtectedRoute>
+          <Layout>
+            <MovimentacoesPage
               onSubmit={handleAddMovimentacao}
               mode="create"
             />
-          } 
-        />
-        
-        <Route 
-          path="/movimentacoes/editar/:id" 
-          element={
-            <MovimentacoesPage 
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/movimentacoes/editar/:id" element={
+        <ProtectedRoute>
+          <Layout>
+            <MovimentacoesPage
               onSubmit={handleEditMovimentacao}
               mode="edit"
             />
-          } 
-        />
-        
-        <Route path="/movimentacoes" element={<MovimentacoesPage />} />
-        
-        {/* Rotas de Usuários */}
-        <Route path="/usuarios" element={<ConsultaUsuariosPage />} />
+          </Layout>
+        </ProtectedRoute>
+      } />
 
-        <Route
-          path="/editar-usuario/:id"
-          element={
+      <Route path="/movimentacoes" element={
+        <ProtectedRoute>
+          <Layout>
+            <MovimentacoesPage />
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      {/* Rotas de Usuários - Apenas para administradores */}
+      <Route path="/usuarios" element={
+        <ProtectedRoute requireAdmin={true}>
+          <Layout>
+            <ConsultaUsuariosPage />
+          </Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/editar-usuario/:id" element={
+        <ProtectedRoute requireAdmin={true}>
+          <Layout>
             <EditarUsuarioPage />
-          }
-        />
+          </Layout>
+        </ProtectedRoute>
+      } />
 
-        {/* Rotas de Fornecedores */}
-        <Route path="/fornecedores" element={<CadastroFornecedorPage />} />
+      {/* Rotas de Fornecedores */}
+      <Route path="/fornecedores" element={
+        <ProtectedRoute>
+          <Layout>
+            <CadastroFornecedorPage />
+          </Layout>
+        </ProtectedRoute>
+      } />
 
-        {/* Rota 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Layout>
+      {/* Rota 404 */}
+      <Route path="*" element={
+        <ProtectedRoute>
+          <Layout>
+            <NotFoundPage />
+          </Layout>
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
 };
 

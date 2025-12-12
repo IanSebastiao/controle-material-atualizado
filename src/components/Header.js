@@ -1,12 +1,23 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Header.css';
 
 const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, profile, signOut, isAdmin } = useAuth();
 
     const isHomePage = location.pathname === '/';
+
+    const handleLogout = async () => {
+        try {
+            await signOut();
+            navigate('/login');
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+        }
+    };
 
     return (
         <header className="header">
@@ -38,7 +49,28 @@ const Header = () => {
                     >
                         📊 Nova Movimentação
                     </button>
+
+                    {isAdmin && (
+                        <button
+                            onClick={() => navigate('/usuarios')}
+                            className="nav-button admin"
+                        >
+                            👥 Gerenciar Usuários
+                        </button>
+                    )}
                 </nav>
+
+                <div className="user-info">
+                    <span className="user-name">
+                        Olá, {profile?.nome || user?.email}
+                    </span>
+                    <button
+                        onClick={handleLogout}
+                        className="logout-button"
+                    >
+                        🚪 Sair
+                    </button>
+                </div>
             </div>
         </header>
     );
